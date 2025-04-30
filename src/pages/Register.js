@@ -15,17 +15,14 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
-import BusinessIcon from '@mui/icons-material/Business';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
+    username: '',
     password: '',
-    confirmPassword: '',
+    phone: '',
+    fullName: '',
+    email: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -41,22 +38,18 @@ const Register = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.firstName) newErrors.firstName = 'First name is required';
-    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    if (!formData.username) newErrors.username = 'Username is required';
+    if (!formData.fullName) newErrors.fullName = 'Full name is required';
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
     if (!formData.phone) newErrors.phone = 'Phone number is required';
-    if (!formData.address) newErrors.address = 'Address is required';
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
-    }
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -70,13 +63,11 @@ const Register = () => {
       setSuccess(true);
       // Reset form
       setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        address: '',
+        username: '',
         password: '',
-        confirmPassword: '',
+        phone: '',
+        fullName: '',
+        email: '',
       });
     }
   };
@@ -116,31 +107,31 @@ const Register = () => {
           )}
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  label="First Name"
-                  name="firstName"
-                  value={formData.firstName}
+                  label="Username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName}
+                  error={!!errors.username}
+                  helperText={errors.username}
                   InputProps={{
                     startAdornment: <PersonIcon sx={{ mr: 1, color: 'action.active' }} />,
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  label="Last Name"
-                  name="lastName"
-                  value={formData.lastName}
+                  label="Full Name"
+                  name="fullName"
+                  value={formData.fullName}
                   onChange={handleChange}
-                  error={!!errors.lastName}
-                  helperText={errors.lastName}
+                  error={!!errors.fullName}
+                  helperText={errors.fullName}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -178,21 +169,6 @@ const Register = () => {
                 <TextField
                   required
                   fullWidth
-                  label="Address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  error={!!errors.address}
-                  helperText={errors.address}
-                  InputProps={{
-                    startAdornment: <BusinessIcon sx={{ mr: 1, color: 'action.active' }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
                   label="Password"
                   name="password"
                   type="password"
@@ -200,19 +176,6 @@ const Register = () => {
                   onChange={handleChange}
                   error={!!errors.password}
                   helperText={errors.password}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
                 />
               </Grid>
             </Grid>
