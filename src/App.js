@@ -1,7 +1,8 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -16,6 +17,8 @@ import PetsIcon from '@mui/icons-material/Pets';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SettingsIcon from '@mui/icons-material/Settings';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
 const drawerWidth = 240;
@@ -39,58 +42,122 @@ const menuItems = [
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ];
 
+// Protected Route component
+const ProtectedRoute = ({ children, isAuthenticated }) => {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Box sx={{ display: 'flex' }}>
-          <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-            <Toolbar>
-              <Typography variant="h6" noWrap component="div">
-                Pet Management CRM
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer
-            variant="permanent"
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              '& .MuiDrawer-paper': {
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex' }}>
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+              <Toolbar>
+                <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+                  Pet Management CRM
+                </Typography>
+                <Button color="inherit" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </Toolbar>
+            </AppBar>
+            <Drawer
+              variant="permanent"
+              sx={{
                 width: drawerWidth,
-                boxSizing: 'border-box',
-              },
-            }}
-          >
-            <Toolbar />
-            <Box sx={{ overflow: 'auto' }}>
-              <List>
-                {menuItems.map((item) => (
-                  <ListItem
-                    button
-                    key={item.text}
-                    component={Link}
-                    to={item.path}
-                  >
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                  </ListItem>
-                ))}
-              </List>
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                  width: drawerWidth,
+                  boxSizing: 'border-box',
+                },
+              }}
+            >
+              <Toolbar />
+              <Box sx={{ overflow: 'auto' }}>
+                <List>
+                  {menuItems.map((item) => (
+                    <ListItem
+                      button
+                      key={item.text}
+                      component={Link}
+                      to={item.path}
+                    >
+                      <ListItemIcon>{item.icon}</ListItemIcon>
+                      <ListItemText primary={item.text} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </Drawer>
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+              <Toolbar />
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/pets"
+                  element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                      <Typography>Pets Management</Typography>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/clients"
+                  element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                      <Typography>Clients Management</Typography>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/appointments"
+                  element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                      <Typography>Appointments Management</Typography>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                      <Typography>Settings</Typography>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
             </Box>
-          </Drawer>
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <Toolbar />
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/pets" element={<Typography>Pets Management</Typography>} />
-              <Route path="/clients" element={<Typography>Clients Management</Typography>} />
-              <Route path="/appointments" element={<Typography>Appointments Management</Typography>} />
-              <Route path="/settings" element={<Typography>Settings</Typography>} />
-            </Routes>
           </Box>
-        </Box>
+        ) : (
+          <Routes>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        )}
       </Router>
     </ThemeProvider>
   );
