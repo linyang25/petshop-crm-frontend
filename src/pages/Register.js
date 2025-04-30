@@ -73,13 +73,14 @@ const Register = () => {
   };
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="sm" sx={{ width: '100%', maxWidth: '500px' }}>
       <Box
         sx={{
           marginTop: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          width: '100%',
         }}
       >
         <Paper
@@ -90,6 +91,7 @@ const Register = () => {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            maxWidth: '500px',
           }}
         >
           <LockOutlinedIcon sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
@@ -105,9 +107,9 @@ const Register = () => {
               .
             </Alert>
           )}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
+            <Grid container spacing={2} sx={{ width: '100%', margin: 0 }}>
+              <Grid item xs={12} sx={{ width: '100%', padding: 0 }}>
                 <TextField
                   required
                   fullWidth
@@ -122,7 +124,7 @@ const Register = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: '100%', padding: 0 }}>
                 <TextField
                   required
                   fullWidth
@@ -134,7 +136,7 @@ const Register = () => {
                   helperText={errors.fullName}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: '100%', padding: 0 }}>
                 <TextField
                   required
                   fullWidth
@@ -150,7 +152,7 @@ const Register = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: '100%', padding: 0 }}>
                 <TextField
                   required
                   fullWidth
@@ -165,7 +167,7 @@ const Register = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ width: '100%', padding: 0 }}>
                 <TextField
                   required
                   fullWidth
