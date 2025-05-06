@@ -9,19 +9,23 @@ import {
   Link,
   Container,
   Alert,
+  CircularProgress,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import EmailIcon from '@mui/icons-material/Email';
+import PersonIcon from '@mui/icons-material/Person';
+import { login } from '../services/authService';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,10 +37,8 @@ const Login = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
     }
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -45,13 +47,20 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // TODO: Implement actual login logic
-      console.log('Login data:', formData);
-      // For demo purposes, we'll simulate a login error
-      setLoginError('Invalid email or password');
+      setIsLoading(true);
+      setLoginError('');
+      try {
+        await login(formData);
+        onLogin(); // Call the onLogin callback from App.js
+        navigate('/'); // Redirect to dashboard
+      } catch (error) {
+        setLoginError(error.message || 'Invalid username or password');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -90,16 +99,16 @@ const Login = () => {
                 <TextField
                   required
                   fullWidth
-                  label="Email Address"
-                  name="email"
-                  type="email"
-                  value={formData.email}
+                  label="Username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
+                  error={!!errors.username}
+                  helperText={errors.username}
                   InputProps={{
-                    startAdornment: <EmailIcon sx={{ mr: 1, color: 'action.active' }} />,
+                    startAdornment: <PersonIcon sx={{ mr: 1, color: 'action.active' }} />,
                   }}
+                  disabled={isLoading}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -113,6 +122,7 @@ const Login = () => {
                   onChange={handleChange}
                   error={!!errors.password}
                   helperText={errors.password}
+                  disabled={isLoading}
                 />
               </Grid>
             </Grid>
@@ -121,8 +131,9 @@ const Login = () => {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}
             >
-              Sign In
+              {isLoading ? <CircularProgress size={24} /> : 'Sign In'}
             </Button>
             <Grid container justifyContent="space-between">
               <Grid item>

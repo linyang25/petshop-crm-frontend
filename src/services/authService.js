@@ -25,4 +25,21 @@ export const register = async (userData) => {
     console.error('Registration error:', error.response?.data || error.message);
     throw error.response?.data || { message: 'Registration failed' };
   }
+};
+
+export const login = async (credentials) => {
+  try {
+    const response = await api.post('/auth/login', {
+      username: credentials.username,
+      password: credentials.password
+    });
+    // Store the token in localStorage
+    localStorage.setItem('token', response.data.token);
+    // Set the token in axios headers for future requests
+    api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    return response.data;
+  } catch (error) {
+    console.error('Login error:', error.response?.data || error.message);
+    throw error.response?.data || { message: 'Login failed' };
+  }
 }; 
