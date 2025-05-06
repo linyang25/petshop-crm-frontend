@@ -15,6 +15,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
+import { register } from '../services/authService';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -55,20 +56,23 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // TODO: Implement actual registration logic
-      console.log('Registration data:', formData);
-      setSuccess(true);
-      // Reset form
-      setFormData({
-        username: '',
-        password: '',
-        phone: '',
-        fullName: '',
-        email: '',
-      });
+      try {
+        await register(formData);
+        setSuccess(true);
+        // Reset form
+        setFormData({
+          username: '',
+          password: '',
+          phone: '',
+          fullName: '',
+          email: '',
+        });
+      } catch (error) {
+        setErrors({ submit: error.message || 'Registration failed. Please try again.' });
+      }
     }
   };
 
@@ -98,6 +102,11 @@ const Register = () => {
           <Typography component="h1" variant="h5">
             Register for Pet Management CRM
           </Typography>
+          {errors.submit && (
+            <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
+              {errors.submit}
+            </Alert>
+          )}
           {success && (
             <Alert severity="success" sx={{ mt: 2, width: '100%' }}>
               Registration successful! You can now{' '}
