@@ -20,6 +20,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import { logout } from './services/authService';
 
 const drawerWidth = 240;
 
@@ -57,8 +58,15 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Still set authenticated to false even if the API call fails
+      setIsAuthenticated(false);
+    }
   };
 
   return (

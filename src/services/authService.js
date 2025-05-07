@@ -42,4 +42,19 @@ export const login = async (credentials) => {
     console.error('Login error:', error.response?.data || error.message);
     throw error.response?.data || { message: 'Login failed' };
   }
+};
+
+export const logout = async () => {
+  try {
+    await api.post('/auth/logout');
+    // Clear the token from localStorage
+    localStorage.removeItem('token');
+    // Remove the token from axios headers
+    delete api.defaults.headers.common['Authorization'];
+  } catch (error) {
+    console.error('Logout error:', error.response?.data || error.message);
+    // Even if the API call fails, we should still clear the local auth state
+    localStorage.removeItem('token');
+    delete api.defaults.headers.common['Authorization'];
+  }
 }; 
