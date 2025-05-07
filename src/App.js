@@ -20,6 +20,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Pets from './pages/Pets';
 import { logout } from './services/authService';
 
 const drawerWidth = 240;
@@ -128,7 +129,7 @@ function App() {
                   path="/pets"
                   element={
                     <ProtectedRoute isAuthenticated={isAuthenticated}>
-                      <Typography>Pets Management</Typography>
+                      <Pets />
                     </ProtectedRoute>
                   }
                 />
