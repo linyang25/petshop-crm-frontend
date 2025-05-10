@@ -2,15 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  CircularProgress,
+  Paper
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { getAppointments } from '../services/appointmentService';
 
 function Appointments() {
@@ -22,7 +16,8 @@ function Appointments() {
     const fetchAppointments = async () => {
       try {
         const data = await getAppointments();
-        setAppointments(data);
+        const appointmentsWithIds = data.map(appointment => ({ ...appointment, id: appointment.appointmentId }));
+        setAppointments(appointmentsWithIds);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch appointments');
@@ -33,13 +28,16 @@ function Appointments() {
     fetchAppointments();
   }, []);
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const columns = [
+    { field: 'appointmentId', headerName: 'Appointment ID', width: 130 },
+    { field: 'appointmentDate', headerName: 'Date', width: 120 },
+    { field: 'appointmentTime', headerName: 'Time', width: 120 },
+    { field: 'customerName', headerName: 'Customer', width: 150 },
+    { field: 'phone', headerName: 'Phone', width: 130 },
+    { field: 'serviceType', headerName: 'Service', width: 150 },
+    { field: 'notes', headerName: 'Notes', width: 200 },
+    { field: 'status', headerName: 'Status', width: 120 },
+  ];
 
   if (error) {
     return (
@@ -50,40 +48,20 @@ function Appointments() {
   }
 
   return (
-    <Box>
+    <Box sx={{ height: '100%', width: '100%' }}>
       <Typography variant="h4" gutterBottom>
         Appointments
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Appointment ID</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Time</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Service</TableCell>
-              <TableCell>Notes</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {appointments.map((appointment) => (
-              <TableRow key={appointment.appointmentId}>
-                <TableCell>{appointment.appointmentId}</TableCell>
-                <TableCell>{appointment.appointmentDate}</TableCell>
-                <TableCell>{appointment.appointmentTime}</TableCell>
-                <TableCell>{appointment.customerName}</TableCell>
-                <TableCell>{appointment.phone}</TableCell>
-                <TableCell>{appointment.serviceType}</TableCell>
-                <TableCell>{appointment.notes}</TableCell>
-                <TableCell>{appointment.status}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Paper sx={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+        <DataGrid
+          rows={appointments}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[10]}
+          disableSelectionOnClick
+          loading={loading}
+        />
+      </Paper>
     </Box>
   );
 }
