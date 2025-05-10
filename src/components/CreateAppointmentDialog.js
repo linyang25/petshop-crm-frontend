@@ -8,6 +8,7 @@ import {
   TextField,
   Grid,
   MenuItem,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { createAppointment } from '../services/petService';
@@ -29,6 +30,12 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   },
 }));
 
+const InfoLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  marginBottom: theme.spacing(0.5),
+  fontWeight: 500,
+}));
+
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
   padding: theme.spacing(3),
 }));
@@ -36,6 +43,10 @@ const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
 const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: theme.spacing(2),
   borderTop: `1px solid ${theme.palette.divider}`,
+}));
+
+const Row = styled(Grid)(({ theme }) => ({
+  marginBottom: theme.spacing(2.5),
 }));
 
 const appointmentTypes = [
@@ -87,16 +98,25 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
     <StyledDialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <StyledDialogTitle>Create Appointment</StyledDialogTitle>
       <StyledDialogContent>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
+        <Grid container direction="column">
+          <Row item>
+            <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
+            <Typography variant="body1" sx={{ fontWeight: 500 }}>{pet?.petName}</Typography>
+          </Row>
+          <Row item>
+            <InfoLabel variant="subtitle1">Owner</InfoLabel>
+            <Typography variant="body1" sx={{ fontWeight: 500 }}>{pet?.customerName}</Typography>
+          </Row>
+          <Row item>
+            <InfoLabel variant="subtitle1">Appointment Type</InfoLabel>
             <TextField
               select
               fullWidth
-              label="Appointment Type"
               name="appointmentType"
               value={formData.appointmentType}
               onChange={handleChange}
               required
+              size="small"
             >
               {appointmentTypes.map((type) => (
                 <MenuItem key={type} value={type}>
@@ -104,46 +124,61 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
                 </MenuItem>
               ))}
             </TextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              type="date"
-              label="Date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              InputLabelProps={{ shrink: true }}
-              required
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              type="time"
-              label="Time"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              InputLabelProps={{ shrink: true }}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
+          </Row>
+          <Row item>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <InfoLabel variant="subtitle1">Date</InfoLabel>
+                <TextField
+                  fullWidth
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <InfoLabel variant="subtitle1">Time</InfoLabel>
+                <TextField
+                  fullWidth
+                  type="time"
+                  name="time"
+                  value={formData.time}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  required
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+          </Row>
+          <Row item>
+            <InfoLabel variant="subtitle1">Notes</InfoLabel>
             <TextField
               fullWidth
               multiline
               rows={4}
-              label="Notes"
               name="notes"
               value={formData.notes}
               onChange={handleChange}
+              size="small"
             />
-          </Grid>
+          </Row>
         </Grid>
       </StyledDialogContent>
       <StyledDialogActions>
-        <Button onClick={onClose} disabled={loading}>
+        <Button 
+          onClick={onClose} 
+          disabled={loading}
+          sx={{ 
+            borderRadius: 2,
+            textTransform: 'none',
+            px: 3,
+          }}
+        >
           Cancel
         </Button>
         <Button
@@ -151,6 +186,11 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
           variant="contained"
           color="primary"
           disabled={loading || !formData.appointmentType || !formData.date || !formData.time}
+          sx={{ 
+            borderRadius: 2,
+            textTransform: 'none',
+            px: 3,
+          }}
         >
           {loading ? 'Creating...' : 'Create Appointment'}
         </Button>
