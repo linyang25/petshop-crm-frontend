@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Paper, Typography, Box, CircularProgress, Container } from '@mui/material';
+import { Grid, Paper, Typography, Box, CircularProgress, Container, Tabs, Tab } from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
 import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { getPetStats } from '../services/dashboardService';
+import { getPetStats, getAppointmentStats } from '../services/dashboardService';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -61,14 +61,20 @@ const ChartCard = ({ title, children }) => (
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
+  const [appointmentStats, setAppointmentStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const data = await getPetStats();
-        setStats(data);
+        const [petStats, apptStats] = await Promise.all([
+          getPetStats(),
+          getAppointmentStats()
+        ]);
+        setStats(petStats);
+        setAppointmentStats(apptStats);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -78,6 +84,10 @@ const Dashboard = () => {
 
     fetchStats();
   }, []);
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   if (loading) {
     return (
@@ -105,106 +115,222 @@ const Dashboard = () => {
     value,
   }));
 
+  const timeSlotData = Object.entries(appointmentStats.timeSlotDistribution).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const topServicesData = appointmentStats.topServices.map(service => ({
+    name: service.serviceType,
+    value: service.count,
+  }));
+
+  const renderPetStats = () => (
+    <Box>
+      <Grid container spacing={4} sx={{ mb: 4, flexWrap: 'wrap' }}>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="Total Pets"
+            value={stats.totalPets}
+            icon={PetsIcon}
+            color="primary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="Today's New Pets"
+            value={stats.todayNewPets}
+            icon={PetsIcon}
+            color="secondary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="This Week's New Pets"
+            value={stats.weekNewPets}
+            icon={PetsIcon}
+            color="success"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="This Month's New Pets"
+            value={stats.monthNewPets}
+            icon={PetsIcon}
+            color="info"
+          />
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={4} sx={{ flexWrap: 'wrap' }}>
+        <Grid item xs={12} md={6} minWidth={350}>
+          <ChartCard title="Species Distribution">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={speciesData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {speciesData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </Grid>
+        <Grid item xs={12} md={6} minWidth={350}>
+          <ChartCard title="Breed Distribution">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={breedData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={4} sx={{ mt: 3 }}>
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper elevation={3} sx={{ p: 3, minWidth: 250 }}>
+            <Typography variant="h6" gutterBottom>
+              Average Pet Age
+            </Typography>
+            <Typography variant="h4">
+              {Math.round(stats.averageAgeDays / 365 * 10) / 10} years
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              ({stats.averageAgeDays} days)
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+
+  const renderAppointmentStats = () => (
+    <Box>
+      <Grid container spacing={4} sx={{ mb: 4, flexWrap: 'wrap' }}>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="Total Appointments"
+            value={appointmentStats.totalAppointments}
+            icon={CalendarMonthIcon}
+            color="primary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="Today's Appointments"
+            value={appointmentStats.todayNewAppointments}
+            icon={CalendarMonthIcon}
+            color="secondary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="Cancellation Rate"
+            value={`${appointmentStats.cancellationRate}%`}
+            icon={CalendarMonthIcon}
+            color="error"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3} minWidth={250}>
+          <StatCard
+            title="No-Show Rate"
+            value={`${appointmentStats.noShowRate}%`}
+            icon={CalendarMonthIcon}
+            color="warning"
+          />
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={4} sx={{ flexWrap: 'wrap' }}>
+        <Grid item xs={12} md={6} minWidth={350}>
+          <ChartCard title="Time Slot Distribution">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={timeSlotData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#00C49F" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </Grid>
+        <Grid item xs={12} md={6} minWidth={350}>
+          <ChartCard title="Top Services">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={topServicesData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#FFBB28" />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={4} sx={{ mt: 3 }}>
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper elevation={3} sx={{ p: 3, minWidth: 250 }}>
+            <Typography variant="h6" gutterBottom>
+              Average Lead Time
+            </Typography>
+            <Typography variant="h4">
+              {Math.round(appointmentStats.avgLeadTimeDays * 10) / 10} days
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Time between booking and appointment
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ flexGrow: 1, p: 0 }}>
         <Typography variant="h4" gutterBottom>
           Dashboard
         </Typography>
-        {/* Stats Cards */}
-        <Grid container spacing={4} sx={{ mb: 4, flexWrap: 'wrap' }}>
-          <Grid item xs={12} sm={6} md={3} minWidth={250}>
-            <StatCard
-              title="Total Pets"
-              value={stats.totalPets}
-              icon={PetsIcon}
-              color="primary"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} minWidth={250}>
-            <StatCard
-              title="Today's New Pets"
-              value={stats.todayNewPets}
-              icon={PetsIcon}
-              color="secondary"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} minWidth={250}>
-            <StatCard
-              title="This Week's New Pets"
-              value={stats.weekNewPets}
-              icon={PetsIcon}
-              color="success"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} minWidth={250}>
-            <StatCard
-              title="This Month's New Pets"
-              value={stats.monthNewPets}
-              icon={PetsIcon}
-              color="info"
-            />
-          </Grid>
-        </Grid>
 
-        {/* Charts */}
-        <Grid container spacing={4} sx={{ flexWrap: 'wrap' }}>
-          <Grid item xs={12} md={6} minWidth={350}>
-            <ChartCard title="Species Distribution">
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={speciesData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {speciesData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          </Grid>
-          <Grid item xs={12} md={6} minWidth={350}>
-            <ChartCard title="Breed Distribution">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={breedData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="value" fill="#8884d8" />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          </Grid>
-        </Grid>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={activeTab} onChange={handleTabChange} aria-label="dashboard tabs">
+            <Tab 
+              icon={<PetsIcon />} 
+              label="Pet Statistics" 
+              iconPosition="start"
+            />
+            <Tab 
+              icon={<CalendarMonthIcon />} 
+              label="Appointment Statistics" 
+              iconPosition="start"
+            />
+          </Tabs>
+        </Box>
 
-        {/* Average Age */}
-        <Grid container spacing={4} sx={{ mt: 3 }}>
-          <Grid item xs={12} md={6} lg={4}>
-            <Paper elevation={3} sx={{ p: 3, minWidth: 250 }}>
-              <Typography variant="h6" gutterBottom>
-                Average Pet Age
-              </Typography>
-              <Typography variant="h4">
-                {Math.round(stats.averageAgeDays / 365 * 10) / 10} years
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                ({stats.averageAgeDays} days)
-              </Typography>
-            </Paper>
-          </Grid>
-        </Grid>
+        {activeTab === 0 && renderPetStats()}
+        {activeTab === 1 && renderAppointmentStats()}
       </Box>
     </Container>
   );

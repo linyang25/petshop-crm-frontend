@@ -8,4 +8,13 @@ export const getPetStats = async () => {
   } catch (error) {
     throw error.response?.data || error.message;
   }
+};
+
+export const getAppointmentStats = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/stats/appointments`);
+    return response.data.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
 }; 
