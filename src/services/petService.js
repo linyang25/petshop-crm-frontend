@@ -45,4 +45,13 @@ export const deletePet = async (petId) => {
   } catch (error) {
     throw error.response?.data || error.message;
   }
+};
+
+export const createAppointment = async (appointmentData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/appointments/create`, appointmentData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
 }; 

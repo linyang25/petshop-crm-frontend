@@ -10,9 +10,11 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EventIcon from '@mui/icons-material/Event';
 import { getPets, getGroupedBreeds, deletePet } from '../services/petService';
 import AddPetDialog from '../components/AddPetDialog';
 import PetDetailsDialog from '../components/PetDetailsDialog';
+import CreateAppointmentDialog from '../components/CreateAppointmentDialog';
 
 const Pets = () => {
   const [pets, setPets] = useState([]);
@@ -29,6 +31,10 @@ const Pets = () => {
   });
   const [breedsData, setBreedsData] = useState({});
   const [speciesOptions, setSpeciesOptions] = useState([]);
+  const [appointmentDialog, setAppointmentDialog] = useState({
+    open: false,
+    pet: null,
+  });
 
   const fetchBreedsData = async () => {
     try {
@@ -99,7 +105,7 @@ const Pets = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 200,
+      width: 280,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
@@ -108,6 +114,15 @@ const Pets = () => {
             onClick={() => handleViewDetails(params.row.id)}
           >
             View Details
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            color="primary"
+            startIcon={<EventIcon />}
+            onClick={() => handleCreateAppointment(params.row)}
+          >
+            Appointment
           </Button>
           <Button
             size="small"
@@ -170,6 +185,20 @@ const Pets = () => {
     }
   };
 
+  const handleCreateAppointment = (pet) => {
+    setAppointmentDialog({
+      open: true,
+      pet,
+    });
+  };
+
+  const handleCloseAppointmentDialog = () => {
+    setAppointmentDialog({
+      open: false,
+      pet: null,
+    });
+  };
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -208,6 +237,19 @@ const Pets = () => {
         onClose={handleCloseDetailsDialog}
         pet={detailsDialog.pet}
         onDelete={fetchPets}
+      />
+
+      <CreateAppointmentDialog
+        open={appointmentDialog.open}
+        onClose={handleCloseAppointmentDialog}
+        pet={appointmentDialog.pet}
+        onSuccess={() => {
+          setSnackbar({
+            open: true,
+            message: 'Appointment created successfully',
+            severity: 'success',
+          });
+        }}
       />
 
       <Snackbar

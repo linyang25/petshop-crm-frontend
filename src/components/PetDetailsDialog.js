@@ -11,7 +11,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EventIcon from '@mui/icons-material/Event';
 import { deletePet } from '../services/petService';
+import CreateAppointmentDialog from './CreateAppointmentDialog';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
@@ -58,6 +60,7 @@ const Row = styled(Grid)(({ theme }) => ({
 const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
 
   if (!pet) return null;
 
@@ -81,6 +84,14 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
 
   const handleDeleteCancel = () => {
     setDeleteConfirmOpen(false);
+  };
+
+  const handleCreateAppointment = () => {
+    setAppointmentDialogOpen(true);
+  };
+
+  const handleCloseAppointmentDialog = () => {
+    setAppointmentDialogOpen(false);
   };
 
   return (
@@ -126,6 +137,20 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
         </StyledDialogContent>
         <StyledDialogActions>
           <Button 
+            onClick={handleCreateAppointment}
+            variant="outlined"
+            color="primary"
+            startIcon={<EventIcon />}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              px: 3,
+              mr: 'auto'
+            }}
+          >
+            Create Appointment
+          </Button>
+          <Button 
             onClick={handleDeleteClick}
             variant="outlined"
             color="error"
@@ -134,7 +159,6 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
               borderRadius: 2,
               textTransform: 'none',
               px: 3,
-              mr: 'auto'
             }}
           >
             Delete Pet
@@ -178,6 +202,16 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <CreateAppointmentDialog
+        open={appointmentDialogOpen}
+        onClose={handleCloseAppointmentDialog}
+        pet={pet}
+        onSuccess={() => {
+          handleCloseAppointmentDialog();
+          // You can add a success callback here if needed
+        }}
+      />
     </>
   );
 };
