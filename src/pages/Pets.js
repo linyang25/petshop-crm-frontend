@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
-import { addPet, getPets } from '../services/petService';
+import { addPet, getPets, getGroupedBreeds } from '../services/petService';
 
 const Pets = () => {
   const [pets, setPets] = useState([]);
@@ -40,16 +40,33 @@ const Pets = () => {
     message: '',
     severity: 'success',
   });
+  const [breedsData, setBreedsData] = useState({});
+  const [speciesOptions, setSpeciesOptions] = useState([]);
 
-  const speciesOptions = ['Dog', 'Cat', 'Bird', 'Fish', 'Other'];
-  const breedOptions = {
-    Dog: ['Golden Retriever', 'German Shepherd', 'Labrador', 'Bulldog', 'Other'],
-    Cat: ['Siamese', 'Persian', 'Maine Coon', 'Ragdoll', 'Other'],
-    Bird: ['Parrot', 'Canary', 'Cockatiel', 'Other'],
-    Fish: ['Goldfish', 'Betta', 'Guppy', 'Other'],
-    Other: ['Other'],
-  };
   const genderOptions = ['Male', 'Female'];
+
+  const fetchBreedsData = async () => {
+    try {
+      const data = await getGroupedBreeds();
+      // Transform the array of objects into an object with species as keys
+      const transformedData = data.reduce((acc, item) => {
+        acc[item.species] = item.breeds;
+        return acc;
+      }, {});
+      setBreedsData(transformedData);
+      setSpeciesOptions(Object.keys(transformedData));
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to fetch breeds data: ' + error,
+        severity: 'error',
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchBreedsData();
+  }, []);
 
   const fetchPets = async () => {
     try {
@@ -263,9 +280,9 @@ const Pets = () => {
                 label="Breed"
                 disabled={!newPet.species}
               >
-                {newPet.species && breedOptions[newPet.species].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                {newPet.species && breedsData[newPet.species]?.map((breed) => (
+                  <MenuItem key={breed} value={breed}>
+                    {breed}
                   </MenuItem>
                 ))}
               </Select>

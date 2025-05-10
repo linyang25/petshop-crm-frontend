@@ -27,4 +27,13 @@ export const getPets = async () => {
   } catch (error) {
     throw error.response?.data || error.message;
   }
+};
+
+export const getGroupedBreeds = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/pet-breeds/grouped`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
 }; 
