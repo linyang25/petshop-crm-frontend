@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Paper, Typography, Box, CircularProgress, Container, Tabs, Tab } from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
-import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getPetStats, getAppointmentStats } from '../services/dashboardService';
 

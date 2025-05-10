@@ -15,7 +15,6 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PetsIcon from '@mui/icons-material/Pets';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -39,8 +38,7 @@ const theme = createTheme({
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Pets', icon: <PetsIcon />, path: '/pets' },
-  { text: 'Appointments', icon: <CalendarMonthIcon />, path: '/appointments' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+  { text: 'Appointments', icon: <CalendarMonthIcon />, path: '/appointments' }
 ];
 
 // Protected Route component
@@ -137,14 +135,6 @@ function App() {
                   element={
                     <ProtectedRoute isAuthenticated={isAuthenticated}>
                       <Appointments />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <ProtectedRoute isAuthenticated={isAuthenticated}>
-                      <Typography>Settings</Typography>
                     </ProtectedRoute>
                   }
                 />
