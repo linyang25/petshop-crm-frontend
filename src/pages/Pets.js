@@ -15,6 +15,7 @@ import {
   Select,
   Snackbar,
   Alert,
+  Grid,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,6 +25,10 @@ const Pets = () => {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
+  const [detailsDialog, setDetailsDialog] = useState({
+    open: false,
+    pet: null,
+  });
   const [newPet, setNewPet] = useState({
     customerName: '',
     species: '',
@@ -129,8 +134,20 @@ const Pets = () => {
   ];
 
   const handleViewDetails = (id) => {
-    // TODO: Implement view details functionality
-    console.log('View details for pet:', id);
+    const pet = pets.find(p => p.id === id);
+    if (pet) {
+      setDetailsDialog({
+        open: true,
+        pet,
+      });
+    }
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setDetailsDialog({
+      open: false,
+      pet: null,
+    });
   };
 
   const handleOpenDialog = () => {
@@ -228,7 +245,6 @@ const Pets = () => {
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[10]}
-          checkboxSelection
           disableSelectionOnClick
           loading={loading}
         />
@@ -353,6 +369,52 @@ const Pets = () => {
           >
             Add Pet
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog 
+        open={detailsDialog.open} 
+        onClose={handleCloseDetailsDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Pet Details</DialogTitle>
+        <DialogContent>
+          {detailsDialog.pet && (
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" color="text.secondary">Pet Name</Typography>
+                <Typography variant="body1">{detailsDialog.pet.petName}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" color="text.secondary">Owner</Typography>
+                <Typography variant="body1">{detailsDialog.pet.customerName}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" color="text.secondary">Species</Typography>
+                <Typography variant="body1">{detailsDialog.pet.species}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" color="text.secondary">Breed</Typography>
+                <Typography variant="body1">{detailsDialog.pet.breedName}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" color="text.secondary">Gender</Typography>
+                <Typography variant="body1">{detailsDialog.pet.gender}</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle1" color="text.secondary">Birthday</Typography>
+                <Typography variant="body1">{detailsDialog.pet.birthday}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" color="text.secondary">Description</Typography>
+                <Typography variant="body1">{detailsDialog.pet.description || 'No description provided'}</Typography>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailsDialog}>Close</Button>
         </DialogActions>
       </Dialog>
 
