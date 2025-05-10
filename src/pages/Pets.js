@@ -105,7 +105,7 @@ const Pets = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 280,
+      flex: 1,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
