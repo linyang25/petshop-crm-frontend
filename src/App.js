@@ -21,6 +21,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Pets from './pages/Pets';
+import Appointments from './pages/Appointments';
 import { logout } from './services/authService';
 
 const drawerWidth = 240;
@@ -145,7 +146,7 @@ function App() {
                   path="/appointments"
                   element={
                     <ProtectedRoute isAuthenticated={isAuthenticated}>
-                      <Typography>Appointments Management</Typography>
+                      <Appointments />
                     </ProtectedRoute>
                   }
                 />
