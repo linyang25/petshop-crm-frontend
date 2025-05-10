@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -6,9 +6,12 @@ import {
   DialogActions,
   Button,
   Typography,
-  Grid
+  Grid,
+  DialogContentText
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { deletePet } from '../services/petService';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
@@ -52,64 +55,130 @@ const Row = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(2.5),
 }));
 
-const PetDetailsDialog = ({ open, onClose, pet }) => {
+const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   if (!pet) return null;
 
+  const handleDeleteClick = () => {
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setIsDeleting(true);
+      await deletePet(pet.id);
+      setDeleteConfirmOpen(false);
+      onDelete?.();
+      onClose();
+    } catch (error) {
+      console.error('Failed to delete pet:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmOpen(false);
+  };
+
   return (
-    <StyledDialog 
-      open={open} 
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-    >
-      <StyledDialogTitle>Pet Details</StyledDialogTitle>
-      <StyledDialogContent>
-        <Grid container direction="column">
-          <Row item>
-            <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
-            <InfoValue variant="body1">{pet.petName}</InfoValue>
-          </Row>
-          <Row item>
-            <InfoLabel variant="subtitle1">Owner</InfoLabel>
-            <InfoValue variant="body1">{pet.customerName}</InfoValue>
-          </Row>
-          <Row item>
-            <InfoLabel variant="subtitle1">Species</InfoLabel>
-            <InfoValue variant="body1">{pet.species}</InfoValue>
-          </Row>
-          <Row item>
-            <InfoLabel variant="subtitle1">Breed</InfoLabel>
-            <InfoValue variant="body1">{pet.breedName}</InfoValue>
-          </Row>
-          <Row item>
-            <InfoLabel variant="subtitle1">Gender</InfoLabel>
-            <InfoValue variant="body1">{pet.gender}</InfoValue>
-          </Row>
-          <Row item>
-            <InfoLabel variant="subtitle1">Birthday</InfoLabel>
-            <InfoValue variant="body1">{pet.birthday}</InfoValue>
-          </Row>
-          <Row item>
-            <InfoLabel variant="subtitle1">Description</InfoLabel>
-            <InfoValue variant="body1">{pet.description || 'No description provided'}</InfoValue>
-          </Row>
-        </Grid>
-      </StyledDialogContent>
-      <StyledDialogActions>
-        <Button 
-          onClick={onClose}
-          variant="contained"
-          color="primary"
-          sx={{ 
-            borderRadius: 2,
-            textTransform: 'none',
-            px: 3,
-          }}
-        >
-          Close
-        </Button>
-      </StyledDialogActions>
-    </StyledDialog>
+    <>
+      <StyledDialog 
+        open={open} 
+        onClose={onClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <StyledDialogTitle>Pet Details</StyledDialogTitle>
+        <StyledDialogContent>
+          <Grid container direction="column">
+            <Row item>
+              <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
+              <InfoValue variant="body1">{pet.petName}</InfoValue>
+            </Row>
+            <Row item>
+              <InfoLabel variant="subtitle1">Owner</InfoLabel>
+              <InfoValue variant="body1">{pet.customerName}</InfoValue>
+            </Row>
+            <Row item>
+              <InfoLabel variant="subtitle1">Species</InfoLabel>
+              <InfoValue variant="body1">{pet.species}</InfoValue>
+            </Row>
+            <Row item>
+              <InfoLabel variant="subtitle1">Breed</InfoLabel>
+              <InfoValue variant="body1">{pet.breedName}</InfoValue>
+            </Row>
+            <Row item>
+              <InfoLabel variant="subtitle1">Gender</InfoLabel>
+              <InfoValue variant="body1">{pet.gender}</InfoValue>
+            </Row>
+            <Row item>
+              <InfoLabel variant="subtitle1">Birthday</InfoLabel>
+              <InfoValue variant="body1">{pet.birthday}</InfoValue>
+            </Row>
+            <Row item>
+              <InfoLabel variant="subtitle1">Description</InfoLabel>
+              <InfoValue variant="body1">{pet.description || 'No description provided'}</InfoValue>
+            </Row>
+          </Grid>
+        </StyledDialogContent>
+        <StyledDialogActions>
+          <Button 
+            onClick={handleDeleteClick}
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              px: 3,
+              mr: 'auto'
+            }}
+          >
+            Delete Pet
+          </Button>
+          <Button 
+            onClick={onClose}
+            variant="contained"
+            color="primary"
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              px: 3,
+            }}
+          >
+            Close
+          </Button>
+        </StyledDialogActions>
+      </StyledDialog>
+
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={handleDeleteCancel}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete {pet.petName}? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            color="error" 
+            variant="contained"
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

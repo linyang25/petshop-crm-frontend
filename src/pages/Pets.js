@@ -9,7 +9,8 @@ import {
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
-import { getPets, getGroupedBreeds } from '../services/petService';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { getPets, getGroupedBreeds, deletePet } from '../services/petService';
 import AddPetDialog from '../components/AddPetDialog';
 import PetDetailsDialog from '../components/PetDetailsDialog';
 
@@ -98,15 +99,26 @@ const Pets = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 130,
+      width: 200,
       renderCell: (params) => (
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={() => handleViewDetails(params.row.id)}
-        >
-          View Details
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => handleViewDetails(params.row.id)}
+          >
+            View Details
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => handleDeletePet(params.row.id)}
+          >
+            Delete
+          </Button>
+        </Box>
       ),
     },
   ];
@@ -138,6 +150,24 @@ const Pets = () => {
 
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
+  const handleDeletePet = async (id) => {
+    try {
+      await deletePet(id);
+      setSnackbar({
+        open: true,
+        message: 'Pet deleted successfully',
+        severity: 'success',
+      });
+      fetchPets();
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete pet: ' + error,
+        severity: 'error',
+      });
+    }
   };
 
   return (
@@ -177,6 +207,7 @@ const Pets = () => {
         open={detailsDialog.open}
         onClose={handleCloseDetailsDialog}
         pet={detailsDialog.pet}
+        onDelete={fetchPets}
       />
 
       <Snackbar

@@ -36,4 +36,13 @@ export const getGroupedBreeds = async () => {
   } catch (error) {
     throw error.response?.data || error.message;
   }
+};
+
+export const deletePet = async (petId) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/pet/delete/${petId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
 }; 
