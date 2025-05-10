@@ -1,9 +1,19 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
 
-export const addPet = async (petData) => {
+export const addPet = async (petData, file) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/pet/add`, petData);
+    const formData = new FormData();
+    formData.append('info', JSON.stringify(petData));
+    if (file) {
+      formData.append('file', file);
+    }
+
+    const response = await axios.post(`${API_BASE_URL}/pet/add`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

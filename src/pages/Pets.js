@@ -31,9 +31,9 @@ const Pets = () => {
     petName: '',
     gender: '',
     birthday: '',
-    profilePhoto: '',
     description: '',
   });
+  const [selectedFile, setSelectedFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -125,9 +125,9 @@ const Pets = () => {
       petName: '',
       gender: '',
       birthday: '',
-      profilePhoto: '',
       description: '',
     });
+    setSelectedFile(null);
     setErrors({});
   };
 
@@ -148,11 +148,16 @@ const Pets = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
   const handleSubmit = async () => {
     if (validateForm()) {
       try {
         setLoading(true);
-        await addPet(newPet);
+        await addPet(newPet, selectedFile);
         setSnackbar({
           open: true,
           message: 'Pet added successfully!',
@@ -294,13 +299,6 @@ const Pets = () => {
               }}
             />
             <TextField
-              name="profilePhoto"
-              label="Profile Photo URL"
-              value={newPet.profilePhoto}
-              onChange={handleInputChange}
-              fullWidth
-            />
-            <TextField
               name="description"
               label="Description"
               value={newPet.description}
@@ -309,6 +307,24 @@ const Pets = () => {
               rows={3}
               fullWidth
             />
+            <Button
+              variant="outlined"
+              component="label"
+              fullWidth
+            >
+              Upload Pet Photo
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+            {selectedFile && (
+              <Typography variant="body2" color="text.secondary">
+                Selected file: {selectedFile.name}
+              </Typography>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>
