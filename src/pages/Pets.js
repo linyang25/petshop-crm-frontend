@@ -13,9 +13,12 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
+import { addPet, getPets } from '../services/petService';
 
 const Pets = () => {
   const [pets, setPets] = useState([]);
@@ -32,32 +35,11 @@ const Pets = () => {
     description: '',
   });
   const [errors, setErrors] = useState({});
-
-  // Mock data for initial development
-  const mockPets = [
-    {
-      id: 1,
-      customerName: 'John Doe',
-      species: 'Dog',
-      breedName: 'Golden Retriever',
-      petName: 'Max',
-      gender: 'Male',
-      birthday: '2020-05-15',
-      profilePhoto: '',
-      description: 'Friendly and playful dog',
-    },
-    {
-      id: 2,
-      customerName: 'Jane Smith',
-      species: 'Cat',
-      breedName: 'Siamese',
-      petName: 'Luna',
-      gender: 'Female',
-      birthday: '2021-03-20',
-      profilePhoto: '',
-      description: 'Calm and affectionate cat',
-    },
-  ];
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   const speciesOptions = ['Dog', 'Cat', 'Bird', 'Fish', 'Other'];
   const breedOptions = {
@@ -69,10 +51,24 @@ const Pets = () => {
   };
   const genderOptions = ['Male', 'Female'];
 
+  const fetchPets = async () => {
+    try {
+      setLoading(true);
+      const data = await getPets();
+      setPets(data);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to fetch pets: ' + error,
+        severity: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // TODO: Replace with actual API call
-    setPets(mockPets);
-    setLoading(false);
+    fetchPets();
   }, []);
 
   const columns = [
@@ -151,15 +147,27 @@ const Pets = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      // TODO: Replace with actual API call
-      const newPetWithId = {
-        ...newPet,
-        id: pets.length + 1,
-      };
-      setPets([...pets, newPetWithId]);
-      handleCloseDialog();
+      try {
+        setLoading(true);
+        await addPet(newPet);
+        setSnackbar({
+          open: true,
+          message: 'Pet added successfully!',
+          severity: 'success',
+        });
+        handleCloseDialog();
+        fetchPets(); // Refresh the pets list
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: 'Failed to add pet: ' + error,
+          severity: 'error',
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -171,6 +179,10 @@ const Pets = () => {
       // Reset breed when species changes
       ...(name === 'species' && { breedName: '' }),
     }));
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   return (
@@ -300,11 +312,30 @@ const Pets = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
+          <Button 
+            onClick={handleSubmit} 
+            variant="contained"
+            disabled={loading}
+          >
             Add Pet
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
