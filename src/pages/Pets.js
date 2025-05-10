@@ -55,7 +55,8 @@ const Pets = () => {
     try {
       setLoading(true);
       const data = await getPets();
-      setPets(data);
+      const petsWithIds = data.map(pet => ({ ...pet, id: pet.petId }));
+      setPets(petsWithIds);
     } catch (error) {
       setSnackbar({
         open: true,
