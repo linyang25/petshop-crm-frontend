@@ -4,22 +4,14 @@ import {
   Typography,
   Paper,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
   Snackbar,
   Alert,
-  Grid,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
-import { addPet, getPets, getGroupedBreeds } from '../services/petService';
+import { getPets, getGroupedBreeds } from '../services/petService';
+import AddPetDialog from '../components/AddPetDialog';
+import PetDetailsDialog from '../components/PetDetailsDialog';
 
 const Pets = () => {
   const [pets, setPets] = useState([]);
@@ -29,17 +21,6 @@ const Pets = () => {
     open: false,
     pet: null,
   });
-  const [newPet, setNewPet] = useState({
-    customerName: '',
-    species: '',
-    breedName: '',
-    petName: '',
-    gender: '',
-    birthday: '',
-    description: '',
-  });
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [errors, setErrors] = useState({});
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -48,12 +29,9 @@ const Pets = () => {
   const [breedsData, setBreedsData] = useState({});
   const [speciesOptions, setSpeciesOptions] = useState([]);
 
-  const genderOptions = ['Male', 'Female'];
-
   const fetchBreedsData = async () => {
     try {
       const data = await getGroupedBreeds();
-      // Transform the array of objects into an object with species as keys
       const transformedData = data.reduce((acc, item) => {
         acc[item.species] = item.breeds;
         return acc;
@@ -152,73 +130,10 @@ const Pets = () => {
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
-    setNewPet({
-      customerName: '',
-      species: '',
-      breedName: '',
-      petName: '',
-      gender: '',
-      birthday: '',
-      description: '',
-    });
-    setSelectedFile(null);
-    setErrors({});
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!newPet.petName.trim()) newErrors.petName = 'Pet name is required';
-    if (!newPet.customerName.trim()) newErrors.customerName = 'Owner name is required';
-    if (!newPet.species) newErrors.species = 'Species is required';
-    if (!newPet.breedName) newErrors.breedName = 'Breed is required';
-    if (!newPet.gender) newErrors.gender = 'Gender is required';
-    if (!newPet.birthday) newErrors.birthday = 'Birthday is required';
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setSelectedFile(file);
-  };
-
-  const handleSubmit = async () => {
-    if (validateForm()) {
-      try {
-        setLoading(true);
-        await addPet(newPet, selectedFile);
-        setSnackbar({
-          open: true,
-          message: 'Pet added successfully!',
-          severity: 'success',
-        });
-        handleCloseDialog();
-        fetchPets(); // Refresh the pets list
-      } catch (error) {
-        setSnackbar({
-          open: true,
-          message: 'Failed to add pet: ' + error,
-          severity: 'error',
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewPet(prev => ({
-      ...prev,
-      [name]: value,
-      // Reset breed when species changes
-      ...(name === 'species' && { breedName: '' }),
-    }));
   };
 
   const handleCloseSnackbar = () => {
@@ -250,173 +165,19 @@ const Pets = () => {
         />
       </Paper>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Add New Pet</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
-            <TextField
-              name="petName"
-              label="Pet Name"
-              value={newPet.petName}
-              onChange={handleInputChange}
-              error={!!errors.petName}
-              helperText={errors.petName}
-              fullWidth
-            />
-            <TextField
-              name="customerName"
-              label="Owner Name"
-              value={newPet.customerName}
-              onChange={handleInputChange}
-              error={!!errors.customerName}
-              helperText={errors.customerName}
-              fullWidth
-            />
-            <FormControl fullWidth error={!!errors.species}>
-              <InputLabel>Species</InputLabel>
-              <Select
-                name="species"
-                value={newPet.species}
-                onChange={handleInputChange}
-                label="Species"
-              >
-                {speciesOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth error={!!errors.breedName}>
-              <InputLabel>Breed</InputLabel>
-              <Select
-                name="breedName"
-                value={newPet.breedName}
-                onChange={handleInputChange}
-                label="Breed"
-                disabled={!newPet.species}
-              >
-                {newPet.species && breedsData[newPet.species]?.map((breed) => (
-                  <MenuItem key={breed} value={breed}>
-                    {breed}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth error={!!errors.gender}>
-              <InputLabel>Gender</InputLabel>
-              <Select
-                name="gender"
-                value={newPet.gender}
-                onChange={handleInputChange}
-                label="Gender"
-              >
-                {genderOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              name="birthday"
-              label="Birthday"
-              type="date"
-              value={newPet.birthday}
-              onChange={handleInputChange}
-              error={!!errors.birthday}
-              helperText={errors.birthday}
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <TextField
-              name="description"
-              label="Description"
-              value={newPet.description}
-              onChange={handleInputChange}
-              multiline
-              rows={3}
-              fullWidth
-            />
-            <Button
-              variant="outlined"
-              component="label"
-              fullWidth
-            >
-              Upload Pet Photo
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </Button>
-            {selectedFile && (
-              <Typography variant="body2" color="text.secondary">
-                Selected file: {selectedFile.name}
-              </Typography>
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button 
-            onClick={handleSubmit} 
-            variant="contained"
-            disabled={loading}
-          >
-            Add Pet
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <AddPetDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        onSuccess={fetchPets}
+        breedsData={breedsData}
+        speciesOptions={speciesOptions}
+      />
 
-      <Dialog 
-        open={detailsDialog.open} 
+      <PetDetailsDialog
+        open={detailsDialog.open}
         onClose={handleCloseDetailsDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Pet Details</DialogTitle>
-        <DialogContent>
-          {detailsDialog.pet && (
-            <Grid container spacing={3} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" color="text.secondary">Pet Name</Typography>
-                <Typography variant="body1">{detailsDialog.pet.petName}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" color="text.secondary">Owner</Typography>
-                <Typography variant="body1">{detailsDialog.pet.customerName}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" color="text.secondary">Species</Typography>
-                <Typography variant="body1">{detailsDialog.pet.species}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" color="text.secondary">Breed</Typography>
-                <Typography variant="body1">{detailsDialog.pet.breedName}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" color="text.secondary">Gender</Typography>
-                <Typography variant="body1">{detailsDialog.pet.gender}</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="subtitle1" color="text.secondary">Birthday</Typography>
-                <Typography variant="body1">{detailsDialog.pet.birthday}</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" color="text.secondary">Description</Typography>
-                <Typography variant="body1">{detailsDialog.pet.description || 'No description provided'}</Typography>
-              </Grid>
-            </Grid>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailsDialog}>Close</Button>
-        </DialogActions>
-      </Dialog>
+        pet={detailsDialog.pet}
+      />
 
       <Snackbar
         open={snackbar.open}
