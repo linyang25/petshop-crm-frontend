@@ -6,8 +6,7 @@ import {
   DialogActions,
   Button,
   Typography,
-  Grid,
-  Box,
+  Grid
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
