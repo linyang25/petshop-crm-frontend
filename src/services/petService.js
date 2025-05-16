@@ -59,7 +59,8 @@ export const createAppointment = async (appointmentData) => {
 export const getPetDetails = async (petId) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/pet/detail/${petId}`);
-    return response.data;
+    const pet = { ...response.data, id: petId, petName: response.data.PetName };
+    return pet;
   } catch (error) {
     throw error.response?.data || error.message;
   }

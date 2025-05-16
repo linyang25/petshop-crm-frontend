@@ -140,7 +140,7 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete, breedsData, speciesOpt
             <Grid container direction="column">
               <Row item>
                 <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
-                <InfoValue variant="body1">{pet.petName}</InfoValue>
+                <InfoValue variant="body1">{pet.PetName}</InfoValue>
               </Row>
               <Row item>
                 <InfoLabel variant="subtitle1">Owner</InfoLabel>

@@ -37,7 +37,7 @@ const EditPetDialog = ({ open, onClose, onSuccess, onDetailsClose, pet, breedsDa
         customerName: pet.customerName || '',
         species: pet.species || '',
         breedName: pet.breedName || '',
-        petName: pet.petName || '',
+        petName: pet.PetName || '',
         gender: pet.gender || '',
         birthday: pet.birthday || '',
         description: pet.description || '',
@@ -108,7 +108,7 @@ const EditPetDialog = ({ open, onClose, onSuccess, onDetailsClose, pet, breedsDa
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
           <TextField
-            name="petName"
+            name="PetName"
             label="Pet Name"
             value={editedPet.petName}
             onChange={handleInputChange}
