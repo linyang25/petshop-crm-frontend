@@ -60,9 +60,9 @@ const appointmentTypes = [
 
 const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
   const [formData, setFormData] = useState({
-    appointmentType: '',
-    date: '',
-    time: '',
+    serviceType: '',
+    appointmentDate: '',
+    appointmentTime: '',
     notes: '',
   });
   const [loading, setLoading] = useState(false);
@@ -83,6 +83,8 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
         petId: pet.id,
         petName: pet.petName,
         customerName: pet.customerName,
+        customerEmail: pet.customerEmail,
+        phone: pet.phone
       };
       await createAppointment(appointmentData);
       onSuccess?.();
@@ -112,7 +114,7 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
             <TextField
               select
               fullWidth
-              name="appointmentType"
+              name="serviceType"
               value={formData.appointmentType}
               onChange={handleChange}
               required
@@ -132,7 +134,7 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
                 <TextField
                   fullWidth
                   type="date"
-                  name="date"
+                  name="appointmentDate"
                   value={formData.date}
                   onChange={handleChange}
                   InputLabelProps={{ shrink: true }}
@@ -145,7 +147,7 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
                 <TextField
                   fullWidth
                   type="time"
-                  name="time"
+                  name="appointmentTime"
                   value={formData.time}
                   onChange={handleChange}
                   InputLabelProps={{ shrink: true }}
@@ -185,7 +187,7 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
           onClick={handleSubmit}
           variant="contained"
           color="primary"
-          disabled={loading || !formData.appointmentType || !formData.date || !formData.time}
+          disabled={loading || !formData.serviceType || !formData.appointmentDate || !formData.appointmentTime}
           sx={{ 
             borderRadius: 2,
             textTransform: 'none',
