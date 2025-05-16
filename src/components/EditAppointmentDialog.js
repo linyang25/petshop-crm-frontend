@@ -7,6 +7,7 @@ import {
   Button,
   TextField,
   Grid,
+  MenuItem,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { updateAppointment } from '../services/appointmentService';
@@ -36,6 +37,15 @@ const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: theme.spacing(2),
   borderTop: `1px solid ${theme.palette.divider}`,
 }));
+
+const appointmentTypes = [
+  'Check-up',
+  'Vaccination',
+  'Grooming',
+  'Surgery',
+  'Dental',
+  'Other'
+];
 
 const EditAppointmentDialog = ({ open, onClose, appointment, onSuccess, onDetailsClose }) => {
   const [formData, setFormData] = useState({
@@ -112,13 +122,20 @@ const EditAppointmentDialog = ({ open, onClose, appointment, onSuccess, onDetail
             </Grid>
             <Grid item xs={12}>
               <TextField
+                select
                 fullWidth
                 label="Service Type"
                 name="serviceType"
                 value={formData.serviceType}
                 onChange={handleChange}
                 required
-              />
+              >
+                {appointmentTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
             <Grid item xs={12}>
               <TextField

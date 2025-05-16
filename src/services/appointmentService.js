@@ -29,7 +29,7 @@ export const deleteAppointment = async (appointmentId) => {
 
 export const updateAppointment = async (appointmentId, appointmentData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/appointments/${appointmentId}`, appointmentData, {
+    const response = await axios.put(`${API_BASE_URL}/appointments/update/${appointmentId}`, appointmentData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
