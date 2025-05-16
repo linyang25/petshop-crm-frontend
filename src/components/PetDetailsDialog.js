@@ -7,7 +7,8 @@ import {
   Button,
   Typography,
   Grid,
-  DialogContentText
+  DialogContentText,
+  Avatar
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -57,6 +58,13 @@ const Row = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(2.5),
 }));
 
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  width: 120,
+  height: 120,
+  marginBottom: theme.spacing(2),
+  border: `3px solid ${theme.palette.primary.main}`,
+}));
+
 const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -104,35 +112,41 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
       >
         <StyledDialogTitle>Pet Details</StyledDialogTitle>
         <StyledDialogContent>
-          <Grid container direction="column">
-            <Row item>
-              <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
-              <InfoValue variant="body1">{pet.petName}</InfoValue>
-            </Row>
-            <Row item>
-              <InfoLabel variant="subtitle1">Owner</InfoLabel>
-              <InfoValue variant="body1">{pet.customerName}</InfoValue>
-            </Row>
-            <Row item>
-              <InfoLabel variant="subtitle1">Species</InfoLabel>
-              <InfoValue variant="body1">{pet.species}</InfoValue>
-            </Row>
-            <Row item>
-              <InfoLabel variant="subtitle1">Breed</InfoLabel>
-              <InfoValue variant="body1">{pet.breedName}</InfoValue>
-            </Row>
-            <Row item>
-              <InfoLabel variant="subtitle1">Gender</InfoLabel>
-              <InfoValue variant="body1">{pet.gender}</InfoValue>
-            </Row>
-            <Row item>
-              <InfoLabel variant="subtitle1">Birthday</InfoLabel>
-              <InfoValue variant="body1">{pet.birthday}</InfoValue>
-            </Row>
-            <Row item>
-              <InfoLabel variant="subtitle1">Description</InfoLabel>
-              <InfoValue variant="body1">{pet.description || 'No description provided'}</InfoValue>
-            </Row>
+          <Grid container direction="column" alignItems="center">
+            <StyledAvatar
+              src={pet.profilePhoto}
+              alt={pet.petName}
+            />
+            <Grid container direction="column">
+              <Row item>
+                <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
+                <InfoValue variant="body1">{pet.petName}</InfoValue>
+              </Row>
+              <Row item>
+                <InfoLabel variant="subtitle1">Owner</InfoLabel>
+                <InfoValue variant="body1">{pet.customerName}</InfoValue>
+              </Row>
+              <Row item>
+                <InfoLabel variant="subtitle1">Species</InfoLabel>
+                <InfoValue variant="body1">{pet.species}</InfoValue>
+              </Row>
+              <Row item>
+                <InfoLabel variant="subtitle1">Breed</InfoLabel>
+                <InfoValue variant="body1">{pet.breedName}</InfoValue>
+              </Row>
+              <Row item>
+                <InfoLabel variant="subtitle1">Gender</InfoLabel>
+                <InfoValue variant="body1">{pet.gender}</InfoValue>
+              </Row>
+              <Row item>
+                <InfoLabel variant="subtitle1">Birthday</InfoLabel>
+                <InfoValue variant="body1">{pet.birthday}</InfoValue>
+              </Row>
+              <Row item>
+                <InfoLabel variant="subtitle1">Description</InfoLabel>
+                <InfoValue variant="body1">{pet.description || 'No description provided'}</InfoValue>
+              </Row>
+            </Grid>
           </Grid>
         </StyledDialogContent>
         <StyledDialogActions>
