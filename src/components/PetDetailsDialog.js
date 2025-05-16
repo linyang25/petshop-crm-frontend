@@ -69,6 +69,7 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
 
   if (!pet) return null;
 
@@ -102,6 +103,12 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
     setAppointmentDialogOpen(false);
   };
 
+  const handlePhotoClick = () => {
+    if (pet.profilePhoto) {
+      setPhotoDialogOpen(true);
+    }
+  };
+
   return (
     <>
       <StyledDialog 
@@ -116,6 +123,8 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
             <StyledAvatar
               src={pet.profilePhoto}
               alt={pet.petName}
+              onClick={handlePhotoClick}
+              sx={{ cursor: pet.profilePhoto ? 'pointer' : 'default' }}
             />
             <Grid container direction="column">
               <Row item>
@@ -191,6 +200,26 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
           </Button>
         </StyledDialogActions>
       </StyledDialog>
+
+      {/* Photo Dialog */}
+      <Dialog
+        open={photoDialogOpen}
+        onClose={() => setPhotoDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent sx={{ p: 0, bgcolor: 'black' }}>
+          <img
+            src={pet.profilePhoto}
+            alt={pet.petName}
+            style={{
+              width: '100%',
+              height: 'auto',
+              display: 'block'
+            }}
+          />
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={deleteConfirmOpen}
