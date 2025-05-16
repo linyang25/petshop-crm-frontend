@@ -64,6 +64,9 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
     appointmentDate: '',
     appointmentTime: '',
     notes: '',
+    customerName: '',
+    customerEmail: '',
+    phone: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -82,9 +85,7 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
         ...formData,
         petId: pet.id,
         petName: pet.petName,
-        customerName: pet.customerName,
-        customerEmail: pet.customerEmail,
-        phone: pet.phone
+
       };
       await createAppointment(appointmentData);
       onSuccess?.();
@@ -108,6 +109,42 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
           <Row item>
             <InfoLabel variant="subtitle1">Owner</InfoLabel>
             <Typography variant="body1" sx={{ fontWeight: 500 }}>{pet?.customerName}</Typography>
+          </Row>
+          <Row item>
+            <InfoLabel variant="subtitle1" sx={{ mb: 2 }}>Custom Information</InfoLabel>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Customer Name"
+                  name="customerName"
+                  value={formData.customerName || ''}
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Customer Email"
+                  name="customerEmail"
+                  type="email"
+                  value={formData.customerEmail || ''}
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Phone Number"
+                  name="phone"
+                  value={formData.phone || ''}
+                  onChange={handleChange}
+                  size="small"
+                />
+              </Grid>
+            </Grid>
           </Row>
           <Row item>
             <InfoLabel variant="subtitle1">Appointment Type</InfoLabel>
