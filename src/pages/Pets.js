@@ -11,7 +11,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
-import { getPets, getGroupedBreeds, deletePet } from '../services/petService';
+import { getPets, getGroupedBreeds, deletePet, getPetDetails } from '../services/petService';
 import AddPetDialog from '../components/AddPetDialog';
 import PetDetailsDialog from '../components/PetDetailsDialog';
 import CreateAppointmentDialog from '../components/CreateAppointmentDialog';
@@ -138,12 +138,18 @@ const Pets = () => {
     },
   ];
 
-  const handleViewDetails = (id) => {
-    const pet = pets.find(p => p.id === id);
-    if (pet) {
+  const handleViewDetails = async (id) => {
+    try {
+      const detailedPet = await getPetDetails(id);
       setDetailsDialog({
         open: true,
-        pet,
+        pet: detailedPet.data,
+      });
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to fetch pet details: ' + error,
+        severity: 'error',
       });
     }
   };

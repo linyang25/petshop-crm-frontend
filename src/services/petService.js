@@ -54,4 +54,13 @@ export const createAppointment = async (appointmentData) => {
   } catch (error) {
     throw error.response?.data || error.message;
   }
+};
+
+export const getPetDetails = async (petId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/pet/detail/${petId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
 }; 
