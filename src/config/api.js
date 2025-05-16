@@ -1,0 +1,1 @@
+export const API_BASE_URL = window.APP_CONFIG?.API_BASE_URL || 'http://13.236.94.52:8080';
