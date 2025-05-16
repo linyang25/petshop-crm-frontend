@@ -243,6 +243,8 @@ const Pets = () => {
         onClose={handleCloseDetailsDialog}
         pet={detailsDialog.pet}
         onDelete={fetchPets}
+        breedsData={breedsData}
+        speciesOptions={speciesOptions}
       />
 
       <CreateAppointmentDialog
