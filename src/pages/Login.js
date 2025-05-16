@@ -54,7 +54,7 @@ const Login = ({ onLogin }) => {
       setLoginError('');
       try {
         await login(formData);
-        onLogin(); // Call the onLogin callback from App.js
+        onLogin(formData.username); // Pass the username to the onLogin callback
         navigate('/'); // Redirect to dashboard
       } catch (error) {
         setLoginError(error.message || 'Invalid username or password');

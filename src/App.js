@@ -51,19 +51,22 @@ const ProtectedRoute = ({ children, isAuthenticated }) => {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = (name) => {
     setIsAuthenticated(true);
+    setUserName(name);
   };
 
   const handleLogout = async () => {
     try {
       await logout();
       setIsAuthenticated(false);
+      setUserName('');
     } catch (error) {
       console.error('Logout failed:', error);
-      // Still set authenticated to false even if the API call fails
       setIsAuthenticated(false);
+      setUserName('');
     }
   };
 
@@ -77,6 +80,9 @@ function App() {
               <Toolbar>
                 <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
                   Pet Management CRM
+                </Typography>
+                <Typography variant="body1" sx={{ mr: 2 }}>
+                  {userName}
                 </Typography>
                 <Button color="inherit" onClick={handleLogout}>
                   Logout
