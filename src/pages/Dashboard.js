@@ -63,91 +63,105 @@ const appointments = [
 function Dashboard() {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" fontWeight={700} mb={2}>Pet Shop CRM</Typography>
+      <Typography variant="h4" fontWeight={800} mb={4}>Dashboard</Typography>
       {/* Summary Cards Row */}
-      <Grid container spacing={4} mb={2}>
+      <Grid container spacing={4} mb={4}>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography variant="h4">128</Typography>
-            <Typography color="textSecondary">Total Pets</Typography>
+          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'row', alignItems: 'center', height: 100 }}>
+            <Box display="flex" flexDirection="column" alignItems="flex-start">
+              <Typography variant="h2" fontWeight={700} fontSize={'2rem'}>128</Typography>
+              <Typography color="textSecondary">Total Pets</Typography>
+            </Box>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <PeopleIcon sx={{ color: '#20cfcf', fontSize: 32 }} />
-            <Typography variant="h4">56</Typography>
-            <Typography color="textSecondary">Total Customers</Typography>
+          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'row', alignItems: 'center', height: 100 }}>
+            <Box sx={{ bgcolor: '#20cfcf', width: 56, height: 56, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 3 }}>
+              <PeopleIcon sx={{ color: '#fff', fontSize: 32 }} />
+            </Box>
+            <Box display="flex" flexDirection="column" alignItems="flex-start">
+              <Typography variant="h2" fontWeight={700} fontSize={'2rem'}>56</Typography>
+              <Typography color="textSecondary">Total Customers</Typography>
+            </Box>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <CalendarMonthIcon sx={{ color: '#7c6ee6', fontSize: 32 }} />
-            <Typography variant="h4">7</Typography>
-            <Typography color="textSecondary">Appointments Today</Typography>
+          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'row', alignItems: 'center', height: 100 }}>
+            <Box sx={{ bgcolor: '#7c6ee6', width: 56, height: 56, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 3 }}>
+              <CalendarMonthIcon sx={{ color: '#fff', fontSize: 32 }} />
+            </Box>
+            <Box display="flex" flexDirection="column" alignItems="flex-start">
+              <Typography variant="h2" fontWeight={700} fontSize={'2rem'}>7</Typography>
+              <Typography color="textSecondary">Appointments Today</Typography>
+            </Box>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <CancelIcon sx={{ color: '#f44336', fontSize: 32 }} />
-            <Typography variant="h4">2</Typography>
-            <Typography color="textSecondary">Cancelled Today</Typography>
+          <Paper sx={{ p: 4, display: 'flex', flexDirection: 'row', alignItems: 'center', height: 100 }}>
+            <Box sx={{ bgcolor: '#f44336', width: 56, height: 56, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 3 }}>
+              <CancelIcon sx={{ color: '#fff', fontSize: 32 }} />
+            </Box>
+            <Box display="flex" flexDirection="column" alignItems="flex-start">
+              <Typography variant="h2" fontWeight={700} fontSize={'2rem'}>2</Typography>
+              <Typography color="textSecondary">Cancelled Today</Typography>
+            </Box>
           </Paper>
         </Grid>
       </Grid>
       {/* Main Dashboard Content */}
-      <Grid container spacing={4}>
+      <Grid container spacing={4} minHeight="50vh">
         {/* First column: Species Distribution */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 320 }}>
-            <Typography align="center" fontWeight={600}>Species Distribution</Typography>
-            <ResponsiveContainer width="100%" height={220}>
+          <Paper sx={{ p: 4, height: 452, width: '300px' }}>
+            <Typography align="center" fontWeight={700} fontSize={20}>Species Distribution</Typography>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie data={speciesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                <Pie data={speciesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} label={{ fontSize: 22, fontWeight: 700 }}>
                   {speciesData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            <Box display="flex" justifyContent="center" gap={2} mt={1}>
-              <Box display="flex" alignItems="center"><Box width={12} height={12} bgcolor="#20cfcf" borderRadius="50%" mr={1} />Dog</Box>
-              <Box display="flex" alignItems="center"><Box width={12} height={12} bgcolor="#7c6ee6" borderRadius="50%" mr={1} />Cat</Box>
+            <Box display="flex" justifyContent="center" gap={4} mt={2}>
+              <Box display="flex" alignItems="center"><Box width={18} height={18} bgcolor="#20cfcf" borderRadius="50%" mr={1} /> <Typography fontSize={20}>Dog</Typography></Box>
+              <Box display="flex" alignItems="center"><Box width={18} height={18} bgcolor="#7c6ee6" borderRadius="50%" mr={1} /> <Typography fontSize={20}>Cat</Typography></Box>
             </Box>
           </Paper>
         </Grid>
         {/* Second column: Breed Distribution */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 320 }}>
-            <Typography align="center" fontWeight={600}>Breed Distribution</Typography>
-            <ResponsiveContainer width="100%" height={220}>
+          <Paper sx={{ p: 4, height: 452 }}>
+            <Typography align="center" fontWeight={700} fontSize={20}>Breed Distribution</Typography>
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={breedData}>
-                <XAxis dataKey="name" />
-                <Bar dataKey="value" fill="#7c6ee6" barSize={40} />
+                <XAxis dataKey="name" fontSize={18} />
+                <Bar dataKey="value" fill="#7c6ee6" barSize={60} />
               </BarChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
         {/* Third column: Weekly Appointment Trend and Popular Services stacked vertically */}
         <Grid item xs={12} md={4}>
-          <Box display="flex" flexDirection="column" gap={2} height="100%">
-            <Paper sx={{ p: 2, height: 180, flex: '0 0 auto' }}>
-              <Typography align="center" fontWeight={600}>Weekly Appointment Trend</Typography>
-              <ResponsiveContainer width="100%" height={100}>
+          <Box display="flex" flexDirection="column" gap={4} height="100%">
+            <Paper sx={{ p: 4, height: 220, flex: '0 0 auto' }}>
+              <Typography align="center" fontWeight={700} fontSize={20}>Weekly Appointment Trend</Typography>
+              <ResponsiveContainer width="100%" height={120}>
                 <LineChart data={weeklyTrend}>
-                  <XAxis dataKey="day" />
-                  <YAxis allowDecimals={false} />
-                  <Line type="monotone" dataKey="value" stroke="#20cfcf" strokeWidth={2} dot />
+                  <XAxis dataKey="day" fontSize={18} />
+                  <YAxis allowDecimals={false} fontSize={18} />
+                  <Line type="monotone" dataKey="value" stroke="#20cfcf" strokeWidth={3} dot />
                 </LineChart>
               </ResponsiveContainer>
             </Paper>
-            <Paper sx={{ p: 2, height: 120, flex: '0 0 auto' }}>
-              <Typography fontWeight={600}>Popular Services</Typography>
+            <Paper sx={{ p: 4, height: 200, flex: '0 0 auto' }}>
+              <Typography fontWeight={700} fontSize={20}>Popular Services</Typography>
               {popularServices.map((service, idx) => (
-                <Box key={service.name} display="flex" alignItems="center" mt={1}>
-                  <Typography width={100}>{service.name}</Typography>
+                <Box key={service.name} display="flex" alignItems="center" mt={2} marginTop={0}>
+                  <Typography width={120} fontSize={20}>{service.name}</Typography>
                   <Box flex={1}>
-                    <Box height={8} bgcolor="#e0e0e0" borderRadius={4}>
-                      <Box height={8} width={`${service.value}%`} bgcolor="#1976d2" borderRadius={4} />
+                    <Box height={14} bgcolor="#e0e0e0" borderRadius={7}>
+                      <Box height={14} width={`${service.value}%`} bgcolor="#1976d2" borderRadius={7} />
                     </Box>
                   </Box>
                 </Box>
@@ -157,9 +171,9 @@ function Dashboard() {
         </Grid>
 
         {/* Today's Appointments */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12} width={'1050px'}>
           <Paper sx={{ p: 2 }}>
-            <Typography fontWeight={600} mb={1}>Today's Appointments</Typography>
+            <Typography fontWeight={700} fontSize={20}>Today's Appointments</Typography>
             <TableContainer>
               <Table size="small">
                 <TableHead>
