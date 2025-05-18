@@ -154,19 +154,21 @@ const AppointmentDetailsDialog = ({ open, onClose, appointment, onDelete }) => {
           >
             Edit
           </Button>
-          <Button 
-            onClick={handleDeleteClick}
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            sx={{ 
-              borderRadius: 2,
-              textTransform: 'none',
-              px: 3,
-            }}
-          >
-            Cancel Appointment
-          </Button>
+          {appointment.status !== 'Canceled' && (
+            <Button 
+              onClick={handleDeleteClick}
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              sx={{ 
+                borderRadius: 2,
+                textTransform: 'none',
+                px: 3,
+              }}
+            >
+              Cancel Appointment
+            </Button>
+          )}
           <Button 
             onClick={onClose}
             variant="contained"

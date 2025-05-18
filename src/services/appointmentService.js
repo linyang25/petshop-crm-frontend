@@ -16,7 +16,7 @@ export const getAppointments = async () => {
 
 export const deleteAppointment = async (appointmentId) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/appointments/${appointmentId}`, {
+    const response = await axios.put(`${API_BASE_URL}/appointments/cancel`, { appointmentId }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
