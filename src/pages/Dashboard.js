@@ -1,337 +1,213 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Paper, Typography, Box, CircularProgress, Container, Tabs, Tab } from '@mui/material';
+import {
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  CircularProgress,
+  Container,
+  Tabs,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Avatar,
+  Chip
+} from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
+import PeopleIcon from '@mui/icons-material/People';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { getPetStats, getAppointmentStats } from '../services/dashboardService';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+const speciesData = [
+  { name: 'Dog', value: 60 },
+  { name: 'Cat', value: 40 },
+];
+const COLORS = ['#20cfcf', '#7c6ee6'];
 
-const StatCard = ({ title, value, icon: Icon, color }) => (
-  <Paper
-    elevation={3}
-    sx={{
-      p: 3,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      height: 140,
-      minWidth: 220,
-      mb: 2,
-    }}
-  >
-    <Box
-      sx={{
-        backgroundColor: `${color}.light`,
-        borderRadius: '50%',
-        p: 2,
-        mb: 2,
-      }}
-    >
-      <Icon sx={{ color: `${color}.main`, fontSize: 40 }} />
-    </Box>
-    <Typography variant="h4" component="div">
-      {value}
-    </Typography>
-    <Typography variant="subtitle1" color="text.secondary">
-      {title}
-    </Typography>
-  </Paper>
-);
+const breedData = [
+  { name: 'Labrador', value: 30 },
+  { name: 'Beagle', value: 30 },
+];
 
-const ChartCard = ({ title, children }) => (
-  <Paper
-    elevation={3}
-    sx={{
-      p: 3,
-      height: '100%',
-      minHeight: 400,
-      minWidth: 320,
-      mb: 2,
-    }}
-  >
-    <Typography variant="h6" gutterBottom>
-      {title}
-    </Typography>
-    {children}
-  </Paper>
-);
+const weeklyTrend = [
+  { day: 'Mon', value: 1 },
+  { day: 'Tue', value: 2 },
+  { day: 'Wed', value: 3 },
+  { day: 'Thu', value: 4 },
+  { day: 'Fri', value: 6 },
+  { day: 'Sun', value: 4 },
+];
 
-const Dashboard = () => {
-  const [stats, setStats] = useState(null);
-  const [appointmentStats, setAppointmentStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState(0);
+const popularServices = [
+  { name: 'Grooming', value: 100 },
+  { name: 'Check-up', value: 60 },
+  { name: 'Vaccination', value: 40 },
+  { name: 'Surgery', value: 20 },
+];
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [petStats, apptStats] = await Promise.all([
-          getPetStats(),
-          getAppointmentStats()
-        ]);
-        setStats(petStats);
-        setAppointmentStats(apptStats);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+const appointments = [
+  { time: '09:00 AM', customer: 'Lin Yang', pet: 'Budy', petType: 'dog', service: 'Grooming', status: 'Scheduled', reminder: true },
+  { time: '10:30 AM', customer: 'Pet3_Ower', pet: 'Pet 3', petType: 'dog', service: 'Vaccination', status: 'Scheduled', reminder: false },
+  { time: '02:00 PM', customer: 'Lin Yang', pet: 'Coco', petType: 'cat', service: 'Check-up', status: 'Cancelled', reminder: true },
+  { time: '04:00 PM', customer: 'Lin Yang', pet: 'Budy', petType: 'dog', service: 'Grooming', status: 'Scheduled', reminder: true },
+];
 
-    fetchStats();
-  }, []);
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Typography color="error">Error loading dashboard: {error}</Typography>
-      </Box>
-    );
-  }
-
-  const speciesData = Object.entries(stats.speciesDistribution).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
-  const breedData = Object.entries(stats.breedDistribution).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
-  const timeSlotData = Object.entries(appointmentStats.timeSlotDistribution).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
-  const topServicesData = appointmentStats.topServices.map(service => ({
-    name: service.serviceType,
-    value: service.count,
-  }));
-
-  const renderPetStats = () => (
-    <Box>
-      <Grid container spacing={4} sx={{ mb: 4, flexWrap: 'wrap' }}>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="Total Pets"
-            value={stats.totalPets}
-            icon={PetsIcon}
-            color="primary"
-          />
+function Dashboard() {
+  return (
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" fontWeight={700} mb={2}>Pet Shop CRM</Typography>
+      <Grid container spacing={2}>
+        {/* Summary Cards */}
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography variant="h4">128</Typography>
+            <Typography color="textSecondary">Total Pets</Typography>
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="Today's New Pets"
-            value={stats.todayNewPets}
-            icon={PetsIcon}
-            color="secondary"
-          />
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <PeopleIcon sx={{ color: '#20cfcf', fontSize: 32 }} />
+            <Typography variant="h4">56</Typography>
+            <Typography color="textSecondary">Total Customers</Typography>
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="This Week's New Pets"
-            value={stats.weekNewPets}
-            icon={PetsIcon}
-            color="success"
-          />
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <CalendarMonthIcon sx={{ color: '#7c6ee6', fontSize: 32 }} />
+            <Typography variant="h4">7</Typography>
+            <Typography color="textSecondary">Appointments Today</Typography>
+          </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="This Month's New Pets"
-            value={stats.monthNewPets}
-            icon={PetsIcon}
-            color="info"
-          />
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <CancelIcon sx={{ color: '#f44336', fontSize: 32 }} />
+            <Typography variant="h4">2</Typography>
+            <Typography color="textSecondary">Cancelled Today</Typography>
+          </Paper>
         </Grid>
-      </Grid>
 
-      <Grid container spacing={4} sx={{ flexWrap: 'wrap' }}>
-        <Grid item xs={12} md={6} minWidth={350}>
-          <ChartCard title="Species Distribution">
-            <ResponsiveContainer width="100%" height={300}>
+        {/* Charts */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 2, height: 260 }}>
+            <Typography align="center" fontWeight={600}>Species Distribution</Typography>
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie
-                  data={speciesData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
+                <Pie data={speciesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} label>
                   {speciesData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend />
               </PieChart>
             </ResponsiveContainer>
-          </ChartCard>
+            <Box display="flex" justifyContent="center" gap={2} mt={1}>
+              <Box display="flex" alignItems="center"><Box width={12} height={12} bgcolor="#20cfcf" borderRadius="50%" mr={1} />Dog</Box>
+              <Box display="flex" alignItems="center"><Box width={12} height={12} bgcolor="#7c6ee6" borderRadius="50%" mr={1} />Cat</Box>
+            </Box>
+          </Paper>
         </Grid>
-        <Grid item xs={12} md={6} minWidth={350}>
-          <ChartCard title="Breed Distribution">
-            <ResponsiveContainer width="100%" height={300}>
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 2, height: 260 }}>
+            <Typography align="center" fontWeight={600}>Breed Distribution</Typography>
+            <ResponsiveContainer width="100%" height={200}>
               <BarChart data={breedData}>
-                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#8884d8" />
+                <Bar dataKey="value" fill="#7c6ee6" barSize={40} />
               </BarChart>
             </ResponsiveContainer>
-          </ChartCard>
+          </Paper>
         </Grid>
-      </Grid>
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 2, height: 260 }}>
+            <Typography align="center" fontWeight={600}>Weekly Appointment Trend</Typography>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={weeklyTrend}>
+                <XAxis dataKey="day" />
+                <YAxis allowDecimals={false} />
+                <Line type="monotone" dataKey="value" stroke="#20cfcf" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
 
-      <Grid container spacing={4} sx={{ mt: 3 }}>
-        <Grid item xs={12} md={6} lg={4}>
-          <Paper elevation={3} sx={{ p: 3, minWidth: 250 }}>
-            <Typography variant="h6" gutterBottom>
-              Average Pet Age
-            </Typography>
-            <Typography variant="h4">
-              {Math.round(stats.averageAgeDays / 365 * 10) / 10} years
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              ({stats.averageAgeDays} days)
-            </Typography>
+        {/* Popular Services */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 2, height: 180 }}>
+            <Typography fontWeight={600}>Popular Services</Typography>
+            {popularServices.map((service, idx) => (
+              <Box key={service.name} display="flex" alignItems="center" mt={1}>
+                <Typography width={100}>{service.name}</Typography>
+                <Box flex={1}>
+                  <Box height={8} bgcolor="#e0e0e0" borderRadius={4}>
+                    <Box height={8} width={`${service.value}%`} bgcolor="#1976d2" borderRadius={4} />
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+          </Paper>
+        </Grid>
+
+        {/* Today's Appointments */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 2 }}>
+            <Typography fontWeight={600} mb={1}>Today's Appointments</Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Time</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Pet</TableCell>
+                    <TableCell>Service</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Reminder Sent</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {appointments.map((appt, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>{appt.time}</TableCell>
+                      <TableCell>{appt.customer}</TableCell>
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Avatar sx={{ width: 24, height: 24, bgcolor: appt.petType === 'dog' ? '#20cfcf' : '#7c6ee6' }}>
+                            <PetsIcon fontSize="small" />
+                          </Avatar>
+                          {appt.pet}
+                        </Box>
+                      </TableCell>
+                      <TableCell>{appt.service}</TableCell>
+                      <TableCell>
+                        {appt.status === 'Scheduled' ? (
+                          <Typography color="primary">Scheduled</Typography>
+                        ) : (
+                          <Typography color="error">Cancelled</Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {appt.reminder ? (
+                          <CheckCircleIcon color="success" />
+                        ) : (
+                          <CancelOutlinedIcon color="disabled" />
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Paper>
         </Grid>
       </Grid>
-    </Box>
-  );
-
-  const renderAppointmentStats = () => (
-    <Box>
-      <Grid container spacing={4} sx={{ mb: 4, flexWrap: 'wrap' }}>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="Total Appointments"
-            value={appointmentStats.totalAppointments}
-            icon={CalendarMonthIcon}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="Today's Appointments"
-            value={appointmentStats.todayNewAppointments}
-            icon={CalendarMonthIcon}
-            color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="Cancellation Rate"
-            value={`${appointmentStats.cancellationRate}%`}
-            icon={CalendarMonthIcon}
-            color="error"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} minWidth={250}>
-          <StatCard
-            title="No-Show Rate"
-            value={`${appointmentStats.noShowRate}%`}
-            icon={CalendarMonthIcon}
-            color="warning"
-          />
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={4} sx={{ flexWrap: 'wrap' }}>
-        <Grid item xs={12} md={6} minWidth={350}>
-          <ChartCard title="Time Slot Distribution">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={timeSlotData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#00C49F" />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </Grid>
-        <Grid item xs={12} md={6} minWidth={350}>
-          <ChartCard title="Top Services">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={topServicesData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#FFBB28" />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartCard>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={4} sx={{ mt: 3 }}>
-        <Grid item xs={12} md={6} lg={4}>
-          <Paper elevation={3} sx={{ p: 3, minWidth: 250 }}>
-            <Typography variant="h6" gutterBottom>
-              Average Lead Time
-            </Typography>
-            <Typography variant="h4">
-              {Math.round(appointmentStats.avgLeadTimeDays * 10) / 10} days
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Time between booking and appointment
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
-  );
-
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ flexGrow: 1, p: 0 }}>
-        <Typography variant="h4" gutterBottom>
-          Dashboard
-        </Typography>
-
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-          <Tabs value={activeTab} onChange={handleTabChange} aria-label="dashboard tabs">
-            <Tab 
-              icon={<PetsIcon />} 
-              label="Pet Statistics" 
-              iconPosition="start"
-            />
-            <Tab 
-              icon={<CalendarMonthIcon />} 
-              label="Appointment Statistics" 
-              iconPosition="start"
-            />
-          </Tabs>
-        </Box>
-
-        {activeTab === 0 && renderPetStats()}
-        {activeTab === 1 && renderAppointmentStats()}
-      </Box>
     </Container>
   );
-};
+}
 
 export default Dashboard; 
