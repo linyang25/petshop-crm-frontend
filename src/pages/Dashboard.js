@@ -64,43 +64,45 @@ function Dashboard() {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" fontWeight={700} mb={2}>Pet Shop CRM</Typography>
-      <Grid container spacing={2}>
-        {/* Summary Cards */}
-        <Grid item xs={12} md={3}>
+      {/* Summary Cards Row */}
+      <Grid container spacing={4} mb={2}>
+        <Grid item xs={12} sm={6} md={3}>
           <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h4">128</Typography>
             <Typography color="textSecondary">Total Pets</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <PeopleIcon sx={{ color: '#20cfcf', fontSize: 32 }} />
             <Typography variant="h4">56</Typography>
             <Typography color="textSecondary">Total Customers</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <CalendarMonthIcon sx={{ color: '#7c6ee6', fontSize: 32 }} />
             <Typography variant="h4">7</Typography>
             <Typography color="textSecondary">Appointments Today</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={3}>
           <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <CancelIcon sx={{ color: '#f44336', fontSize: 32 }} />
             <Typography variant="h4">2</Typography>
             <Typography color="textSecondary">Cancelled Today</Typography>
           </Paper>
         </Grid>
-
-        {/* Charts */}
+      </Grid>
+      {/* Main Dashboard Content */}
+      <Grid container spacing={4}>
+        {/* First column: Species Distribution */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 260 }}>
+          <Paper sx={{ p: 2, height: 320 }}>
             <Typography align="center" fontWeight={600}>Species Distribution</Typography>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
-                <Pie data={speciesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} label>
+                <Pie data={speciesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
                   {speciesData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -113,10 +115,11 @@ function Dashboard() {
             </Box>
           </Paper>
         </Grid>
+        {/* Second column: Breed Distribution */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 260 }}>
+          <Paper sx={{ p: 2, height: 320 }}>
             <Typography align="center" fontWeight={600}>Breed Distribution</Typography>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={breedData}>
                 <XAxis dataKey="name" />
                 <Bar dataKey="value" fill="#7c6ee6" barSize={40} />
@@ -124,34 +127,33 @@ function Dashboard() {
             </ResponsiveContainer>
           </Paper>
         </Grid>
+        {/* Third column: Weekly Appointment Trend and Popular Services stacked vertically */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 260 }}>
-            <Typography align="center" fontWeight={600}>Weekly Appointment Trend</Typography>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={weeklyTrend}>
-                <XAxis dataKey="day" />
-                <YAxis allowDecimals={false} />
-                <Line type="monotone" dataKey="value" stroke="#20cfcf" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-
-        {/* Popular Services */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2, height: 180 }}>
-            <Typography fontWeight={600}>Popular Services</Typography>
-            {popularServices.map((service, idx) => (
-              <Box key={service.name} display="flex" alignItems="center" mt={1}>
-                <Typography width={100}>{service.name}</Typography>
-                <Box flex={1}>
-                  <Box height={8} bgcolor="#e0e0e0" borderRadius={4}>
-                    <Box height={8} width={`${service.value}%`} bgcolor="#1976d2" borderRadius={4} />
+          <Box display="flex" flexDirection="column" gap={2} height="100%">
+            <Paper sx={{ p: 2, height: 180, flex: '0 0 auto' }}>
+              <Typography align="center" fontWeight={600}>Weekly Appointment Trend</Typography>
+              <ResponsiveContainer width="100%" height={100}>
+                <LineChart data={weeklyTrend}>
+                  <XAxis dataKey="day" />
+                  <YAxis allowDecimals={false} />
+                  <Line type="monotone" dataKey="value" stroke="#20cfcf" strokeWidth={2} dot />
+                </LineChart>
+              </ResponsiveContainer>
+            </Paper>
+            <Paper sx={{ p: 2, height: 120, flex: '0 0 auto' }}>
+              <Typography fontWeight={600}>Popular Services</Typography>
+              {popularServices.map((service, idx) => (
+                <Box key={service.name} display="flex" alignItems="center" mt={1}>
+                  <Typography width={100}>{service.name}</Typography>
+                  <Box flex={1}>
+                    <Box height={8} bgcolor="#e0e0e0" borderRadius={4}>
+                      <Box height={8} width={`${service.value}%`} bgcolor="#1976d2" borderRadius={4} />
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            ))}
-          </Paper>
+              ))}
+            </Paper>
+          </Box>
         </Grid>
 
         {/* Today's Appointments */}
