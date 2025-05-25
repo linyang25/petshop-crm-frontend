@@ -12,4 +12,30 @@ export const getAppointments = async () => {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch appointments');
   }
+};
+
+export const deleteAppointment = async (appointmentId) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/appointments/cancel`, { appointmentId }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to delete appointment');
+  }
+};
+
+export const updateAppointment = async (appointmentId, appointmentData) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/appointments/update/${appointmentId}`, appointmentData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update appointment');
+  }
 }; 

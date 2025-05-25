@@ -152,7 +152,7 @@ const CreateAppointmentDialog = ({ open, onClose, pet, onSuccess }) => {
               select
               fullWidth
               name="serviceType"
-              value={formData.appointmentType}
+              value={formData.serviceType}
               onChange={handleChange}
               required
               size="small"

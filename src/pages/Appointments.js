@@ -2,31 +2,69 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
-  Paper
+  Paper,
+  Button,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { getAppointments } from '../services/appointmentService';
+import AppointmentDetailsDialog from '../components/AppointmentDetailsDialog';
 
 function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [detailsDialog, setDetailsDialog] = useState({
+    open: false,
+    appointment: null,
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true);
+      const data = await getAppointments();
+      const appointmentsWithIds = data.map(appointment => ({ ...appointment, id: appointment.appointmentId }));
+      setAppointments(appointmentsWithIds);
+    } catch (err) {
+      setError('Failed to fetch appointments');
+      setSnackbar({
+        open: true,
+        message: 'Failed to fetch appointments: ' + err,
+        severity: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const data = await getAppointments();
-        const appointmentsWithIds = data.map(appointment => ({ ...appointment, id: appointment.appointmentId }));
-        setAppointments(appointmentsWithIds);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch appointments');
-        setLoading(false);
-      }
-    };
-
     fetchAppointments();
   }, []);
+
+  const handleViewDetails = (appointment) => {
+    setDetailsDialog({
+      open: true,
+      appointment,
+    });
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setDetailsDialog({
+      open: false,
+      appointment: null,
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   const columns = [
     { field: 'appointmentId', headerName: 'Appointment ID', width: 130 },
@@ -37,6 +75,23 @@ function Appointments() {
     { field: 'serviceType', headerName: 'Service', width: 150 },
     { field: 'notes', headerName: 'Notes', width: 200 },
     { field: 'status', headerName: 'Status', width: 120 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 1,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<VisibilityIcon />}
+            onClick={() => handleViewDetails(params.row)}
+          >
+            View Details
+          </Button>
+        </Box>
+      ),
+    },
   ];
 
   if (error) {
@@ -62,6 +117,28 @@ function Appointments() {
           loading={loading}
         />
       </Paper>
+
+      <AppointmentDetailsDialog
+        open={detailsDialog.open}
+        onClose={handleCloseDetailsDialog}
+        appointment={detailsDialog.appointment}
+        onDelete={fetchAppointments}
+      />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

@@ -36,6 +36,9 @@ export const login = async (credentials) => {
     localStorage.setItem('token', response.data.token);
     // Set the token in axios headers for future requests
     api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    if (response.data.code !== 200) {
+      throw new Error(response.data.message);
+    }
     return response.data;
   } catch (error) {
     console.error('Login error:', error.response?.data || error.message);

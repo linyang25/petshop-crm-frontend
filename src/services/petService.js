@@ -59,6 +59,26 @@ export const createAppointment = async (appointmentData) => {
 export const getPetDetails = async (petId) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/pet/detail/${petId}`);
+    const pet = { ...response.data, id: petId, petName: response.data.PetName };
+    return pet;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const updatePet = async (petId, petData, file) => {
+  try {
+    const formData = new FormData();
+    formData.append('info', JSON.stringify(petData));
+    if (file) {
+      formData.append('file', file);
+    }
+
+    const response = await axios.put(`${API_BASE_URL}/pet/update/${petId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

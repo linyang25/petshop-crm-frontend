@@ -13,8 +13,10 @@ import {
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
+import EditIcon from '@mui/icons-material/Edit';
 import { deletePet } from '../services/petService';
 import CreateAppointmentDialog from './CreateAppointmentDialog';
+import EditPetDialog from './EditPetDialog';
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
@@ -65,11 +67,12 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   border: `3px solid ${theme.palette.primary.main}`,
 }));
 
-const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
+const PetDetailsDialog = ({ open, onClose, pet, onDelete, breedsData, speciesOptions }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   if (!pet) return null;
 
@@ -109,6 +112,14 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
     }
   };
 
+  const handleEditClick = () => {
+    setEditDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditDialogOpen(false);
+  };
+
   return (
     <>
       <StyledDialog 
@@ -129,7 +140,7 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
             <Grid container direction="column">
               <Row item>
                 <InfoLabel variant="subtitle1">Pet Name</InfoLabel>
-                <InfoValue variant="body1">{pet.petName}</InfoValue>
+                <InfoValue variant="body1">{pet.PetName}</InfoValue>
               </Row>
               <Row item>
                 <InfoLabel variant="subtitle1">Owner</InfoLabel>
@@ -172,6 +183,19 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
             }}
           >
             Create Appointment
+          </Button>
+          <Button 
+            onClick={handleEditClick}
+            variant="outlined"
+            color="primary"
+            startIcon={<EditIcon />}
+            sx={{ 
+              borderRadius: 2,
+              textTransform: 'none',
+              px: 3,
+            }}
+          >
+            Edit
           </Button>
           <Button 
             onClick={handleDeleteClick}
@@ -252,8 +276,20 @@ const PetDetailsDialog = ({ open, onClose, pet, onDelete }) => {
         pet={pet}
         onSuccess={() => {
           handleCloseAppointmentDialog();
-          // You can add a success callback here if needed
         }}
+      />
+
+      <EditPetDialog
+        open={editDialogOpen}
+        onClose={handleCloseEditDialog}
+        pet={pet}
+        breedsData={breedsData}
+        speciesOptions={speciesOptions}
+        onSuccess={() => {
+          handleCloseEditDialog();
+          onDelete?.(); // Refresh the pet list
+        }}
+        onDetailsClose={onClose}
       />
     </>
   );
