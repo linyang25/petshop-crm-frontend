@@ -95,8 +95,8 @@ function Dashboard() {
               <PeopleIcon sx={{ color: '#fff', fontSize: 32 }} />
             </Box>
             <Box display="flex" flexDirection="column" alignItems="flex-start">
-              <Typography variant="h2" fontWeight={700} fontSize={'2rem'}>{dashboardData.totalCustomers}</Typography>
-              <Typography color="textSecondary">Total Customers</Typography>
+              <Typography variant="h2" fontWeight={700} fontSize={'2rem'}>{dashboardData.newPetsToday}</Typography>
+              <Typography color="textSecondary">New Pets Today</Typography>
             </Box>
           </Paper>
         </Grid>
